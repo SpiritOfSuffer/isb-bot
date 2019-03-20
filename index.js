@@ -19,7 +19,7 @@ app.post('/api/callback/approve', (req, res) => {
         res.send('4d0fcb53');
     }
     if(req.body.type === "message_new") {
-        let text = req.body.text;
+        let text = JSON.stringify(req.body.text);
         //let req = req.body;
         console.log(text);
         console.log(req.body);
