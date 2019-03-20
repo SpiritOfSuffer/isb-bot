@@ -6,7 +6,7 @@ import cors from 'cors';
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.user(cors());
+app.use(cors());
 
 app.use(bodyParser.urlencoded({
     extended: true
