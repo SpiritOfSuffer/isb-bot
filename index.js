@@ -22,7 +22,7 @@ app.post('/api/callback/approve', (req, res) => {
     }
     if(data.type === "message_new") {
         const text = JSON.stringify(data.object.text);
-        const chat_id = JSON.stringify(data.object.peer_id);
+        const chat_id = JSON.stringify(data.object.peer_id) - 2000000000;
         if(text.indexOf("настя инфа") !== -1) {
             const message = `Вероятность составляет: ${randomInteger(0, 100)}%`;
             const url = `https://api.vk.com/method/messages.send?chat_id=${chat_id}&message=${message}&random_id=${Math.ceil(Math.random()*100000000)}&access_token=c5f0c9862f1d6e72d2296b710eb62914730426c11bcd3ea2e787d81d1eb6f329173aebca67228e32ec96f&v=5.92`;
