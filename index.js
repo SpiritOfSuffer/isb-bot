@@ -14,7 +14,7 @@ app.post('/api/callback/approve', (req, res) => {
     }
     if(req.body.type === "message_new") {
         let text = req.body.text;
-        let req = req.body;
+        //let req = req.body;
         console.log(text);
         console.log(req.body);
         /*if(text.indexOf("настя инфа") !== -1) {
