@@ -17,7 +17,7 @@ app.use(cors());
 app.post('/api/callback/approve', (req, res) => {
 
     const data = req.body;
-    if(data.type === "confirmation" && data.group_id === 179812415) {
+    if(data.type === "confirmation" && data.group_id === 179504857) {
         res.send('3a4e1fdb');//по необходимости поменять строку(было - 4d0fcb53) и id группы(было 179812415)
     }
     if(data.type === "message_new") {
