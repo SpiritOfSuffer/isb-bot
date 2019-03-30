@@ -4,6 +4,8 @@ import { requestToVkAPI, requestToOpenWeatherMapAPI } from '../api';
 import { hasKey, hasCommand, randomNumber, lastWordIsNotCommand } from '../helpers';
 import VkParameters from '../models/vk';
 import OpenWeatherMapParameters from '../models/openweathermap';
+import cheerio from 'cheerio';
+import request from 'request';
 
 const router = express.Router();
 
@@ -68,6 +70,31 @@ router.post('/api/callback/approve', async (req, res) => {
                 }
                 else {
                     await requestToVkAPI(new VkParameters('messages.send', chatId, `Введите город`));
+                }
+            }
+
+            if(hasCommand(commands[5], text)) {
+                if(lastWordIsNotCommand(commands[5], text)) {
+                    const word = text.split(' ').splice(-1).join().slice(0, -1);
+                    console.log(word);
+                    try {
+                        request(encodeURI(`https://rifmus.net/rifma/${word}`), (error, response, body) => {
+                            if(error) {
+                                console.error(error);
+                            }
+                             let rhymes = cheerio.load(body)(".multicolumn").text().replace(/\s+/g, ' ').split(' ');
+                             rhymes.length <= 1 ? 
+                             requestToVkAPI(new VkParameters('messages.send', chatId, `${word} – рифма не найдена`)):
+                             requestToVkAPI(new VkParameters('messages.send', chatId, `${word} – ${rhymes[randomNumber(0, rhymes.length - 2)]}`));
+                        });
+                    }
+                    catch(e) {
+                        console.error(e);
+                    }
+                    
+                }
+                else {
+                    await requestToVkAPI(new VkParameters('messages.send', chatId, 'Вы не указали рифмуемое слово.'));
                 }
             }
         }
