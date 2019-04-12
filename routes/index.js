@@ -109,7 +109,7 @@ router.post('/api/callback/approve', async (req, res) => {
                         if(user && user.giveNicknameCount === 3) {
                             await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
                         }
-                        else {
+                        //else {
                             await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
                             .then(async res => {
                                 let data = JSON.parse(res);
@@ -238,7 +238,7 @@ router.post('/api/callback/approve', async (req, res) => {
                             }
                         })
                         .catch(err => console.log(err));
-                        }
+                        //}
                     });            
                     
                 }
