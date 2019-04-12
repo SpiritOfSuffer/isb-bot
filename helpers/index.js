@@ -17,6 +17,10 @@ export function lastWordIsNotCommand(command, text) {
     if(text.slice(-1) === '"') {
         text = text.slice(1, -1);
     }
+    if(command.split(' ').length > 1) {
+        command = command.split(' ').splice(-1).join();
+    }
+    console.log(`${command} --- ${text}`)
     return text.split(' ').splice(-1).join() !== command;
 }
 export function randomNumber(min, max) {

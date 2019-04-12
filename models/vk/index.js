@@ -14,5 +14,8 @@ export default class VkParameters {
         if(method === 'users.get') {
             this.params = `user_ids=${id}`;
         }
+        if(method === 'messages.getHistory') {
+            this.params = `peer_id=${id}`;
+        }
     }
 }
