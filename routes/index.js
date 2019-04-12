@@ -106,7 +106,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     let usersCollection = await loadData('users');
                     let nicknamesCollection = await loadData('nicknames');
                     usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
-                        if(user.giveNicknameCount === 3) {
+                        if(user && user.giveNicknameCount === 3) {
                             await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
                         }
                         else {
