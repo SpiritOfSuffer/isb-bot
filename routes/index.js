@@ -111,25 +111,47 @@ router.post('/api/callback/approve', async (req, res) => {
                         }
                         else {
                             await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
-                        .then(async res => {
-                            let data = JSON.parse(res);
-                            let users = [];
-                            data.response.profiles.forEach(item => {
-                                if(item.first_name === user && item.id != from_id) {
-                                    console.log(item.id + ":" + from_id);
-                                    users.push(item);
-                                }
-                            });
-                            console.log(users);
-                            if(users.length === 1) {
-                                let nickname = nicknames[randomNumber(0, nicknames.length - 1)];  
-                                usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
-                                    
-                                    try {
-                                        if(user) {
-                                            if(user.giveNicknameCount === 3) {
-                                                await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
-                                            }
+                            .then(async res => {
+                                let data = JSON.parse(res);
+                                let users = [];
+                                data.response.profiles.forEach(item => {
+                                    if(item.first_name === user && item.id != from_id) {
+                                        console.log(item.id + ":" + from_id);
+                                        users.push(item);
+                                    }
+                                });
+                                console.log(users);
+                                if(users.length === 1) {
+                                    let nickname = nicknames[randomNumber(0, nicknames.length - 1)];  
+                                    usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
+                                        
+                                        try {
+                                            if(user) {
+                                                /*if(user.giveNicknameCount === 3) {
+                                                    await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
+                                                }*/
+                                               // else {
+                                                    nicknamesCollection.findOne({ $and: [ { user_id: users[0].id }, { chat_id : chatId } ] }, async (err, user) => {
+                                                        try {
+                                                            if(user) {
+                                                                await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
+                                                            }
+                                                            else {
+                                                                usersCollection.update( 
+                                                                    { user_id: from_id }, 
+                                                                    { $inc : { giveNicknameCount: 1 }},
+                                                                    { chat_id : chatId });
+                                                                await insertNickname(nicknamesCollection, `${users[0].first_name} ${users[0].last_name}`, users[0].id, nickname, chatId);
+                                                                let config = new BotConfig(users[0].first_name, nickname);
+                                                                await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
+                                                            }
+                                                        }
+                                                        catch(e) {
+                                                            console.log(e);
+                                                        }
+                                                    });
+                                                }
+                                            //}
                                             else {
                                                 nicknamesCollection.findOne({ $and: [ { user_id: users[0].id }, { chat_id : chatId } ] }, async (err, user) => {
                                                     try {
@@ -137,54 +159,54 @@ router.post('/api/callback/approve', async (req, res) => {
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
                                                         }
                                                         else {
-                                                            usersCollection.update( 
-                                                                { user_id: from_id }, 
-                                                                { $inc : { giveNicknameCount: 1 }},
-                                                                { chat_id : chatId });
+                                                            await insertUser(usersCollection, from_id, chatId);
                                                             await insertNickname(nicknamesCollection, `${users[0].first_name} ${users[0].last_name}`, users[0].id, nickname, chatId);
                                                             let config = new BotConfig(users[0].first_name, nickname);
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
                                                         }
                                                     }
                                                     catch(e) {
-                                                        console.log(e);
+                                                        console.log(e);                                                        
                                                     }
                                                 });
                                             }
                                         }
-                                        else {
-                                            nicknamesCollection.findOne({ $and: [ { user_id: users[0].id }, { chat_id : chatId } ] }, async (err, user) => {
-                                                try {
-                                                    if(user) {
-                                                        await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
-                                                    }
-                                                    else {
-                                                        await insertUser(usersCollection, from_id, chatId);
-                                                        await insertNickname(nicknamesCollection, `${users[0].first_name} ${users[0].last_name}`, users[0].id, nickname, chatId);
-                                                        let config = new BotConfig(users[0].first_name, nickname);
-                                                        await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
-                                                    }
-                                                }
-                                                catch(e) {
-                                                    console.log(e);                                                        
-                                                }
-                                            });
+                                        catch(e) {
+                                            console.log(e);
                                         }
-                                    }
-                                    catch(e) {
-                                        console.log(e);
-                                    }
-                                });
-                                
-                            }
-                            else if(users.length > 1) {
-                                let userForNickname = users[randomNumber(0, users.length - 1)];
-                                let nickname = nicknames[randomNumber(0, nicknames.length - 1)];
-                                usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
-                                    try {
-                                        if(user) {
-                                            if(user.giveNicknameCount === 3) {
-                                                await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
+                                    });
+                                    
+                                }
+                                else if(users.length > 1) {
+                                    let userForNickname = users[randomNumber(0, users.length - 1)];
+                                    let nickname = nicknames[randomNumber(0, nicknames.length - 1)];
+                                    usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
+                                        try {
+                                            if(user) {
+                                                if(user.giveNicknameCount === 3) {
+                                                    await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
+                                                }
+                                                else {
+                                                    nicknamesCollection.findOne({ $and: [ { user_id: userForNickname.id }, { chat_id : chatId } ] }, async (err, user) => {
+                                                        try {
+                                                            if(user) {
+                                                                await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
+                                                            }
+                                                            else {
+                                                                usersCollection.update( 
+                                                                    { user_id: from_id }, 
+                                                                    { $inc : { giveNicknameCount: 1 }},
+                                                                    { chat_id : chatId });
+                                                                await insertNickname(nicknamesCollection, `${userForNickname.first_name} ${userForNickname.last_name}`, userForNickname.id, nickname, chatId);
+                                                                let config = new BotConfig(userForNickname.first_name, nickname);
+                                                                await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
+                                                            }
+                                                        }
+                                                        catch(e) {
+                                                            console.log(e);
+                                                        }
+                                                    });
+                                                }
                                             }
                                             else {
                                                 nicknamesCollection.findOne({ $and: [ { user_id: userForNickname.id }, { chat_id : chatId } ] }, async (err, user) => {
@@ -193,44 +215,22 @@ router.post('/api/callback/approve', async (req, res) => {
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
                                                         }
                                                         else {
-                                                            usersCollection.update( 
-                                                                { user_id: from_id }, 
-                                                                { $inc : { giveNicknameCount: 1 }},
-                                                                { chat_id : chatId });
+                                                            await insertUser(usersCollection, from_id, chatId);
                                                             await insertNickname(nicknamesCollection, `${userForNickname.first_name} ${userForNickname.last_name}`, userForNickname.id, nickname, chatId);
                                                             let config = new BotConfig(userForNickname.first_name, nickname);
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
                                                         }
                                                     }
                                                     catch(e) {
-                                                        console.log(e);
+                                                        console.log(e);                                                        
                                                     }
                                                 });
                                             }
                                         }
-                                        else {
-                                            nicknamesCollection.findOne({ $and: [ { user_id: userForNickname.id }, { chat_id : chatId } ] }, async (err, user) => {
-                                                try {
-                                                    if(user) {
-                                                        await requestToVkAPI(new VkParameters('messages.send', chatId, `У пользователя уже есть кличка`));
-                                                    }
-                                                    else {
-                                                        await insertUser(usersCollection, from_id, chatId);
-                                                        await insertNickname(nicknamesCollection, `${userForNickname.first_name} ${userForNickname.last_name}`, userForNickname.id, nickname, chatId);
-                                                        let config = new BotConfig(userForNickname.first_name, nickname);
-                                                        await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
-                                                    }
-                                                }
-                                                catch(e) {
-                                                    console.log(e);                                                        
-                                                }
-                                            });
+                                        catch(e) {
+                                            console.log(e);
                                         }
-                                    }
-                                    catch(e) {
-                                        console.log(e);
-                                    }
-                                });
+                                    });
                                     
                             }
                             else {
