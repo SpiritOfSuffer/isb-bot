@@ -19,6 +19,7 @@ router.post('/api/callback/approve', async (req, res) => {
     }
     if(data.type === "message_new") {
         const text = JSON.stringify(data.object.text);
+        const from_id = JSON.stringify(data.object.from_id);
         const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
         if(hasKey(appealPhrases, text)) {
             if(hasCommand(commands[0], text)) {
@@ -237,7 +238,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     await requestToVkAPI(new VkParameters('messages.send', chatId, 'Ты не указал кому выдать кличку.'));
                 }
             }
-            
+
             if(hasCommand(commands[7], text)) {
                 let message = 'Клички пользователей чата:\n';
                 await loadData('nicknames')
