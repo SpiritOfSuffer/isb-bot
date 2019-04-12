@@ -6,14 +6,14 @@ export async function loadData(collection) {
     .connect(DB,
      {useNewUrlParser: true});
 
-     return client.db('isb-bot').collection(collection);
+     return client.db('isb-bot-production').collection(collection);
 }
 
 export async function dropCollection(collection) {
     const client = await mongodb.MongoClient
     .connect(DB,
      {useNewUrlParser: true});
-     client.db('isb-bot').collection(collection).drop();
+     client.db('isb-bot-production').collection(collection).drop();
      console.log(`Collection ${collection} was dropped`);
 }
 
