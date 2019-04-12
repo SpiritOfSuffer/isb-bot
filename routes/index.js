@@ -104,7 +104,12 @@ router.post('/api/callback/approve', async (req, res) => {
                 if(lastWordIsNotCommand(commands[6], text)) {
                     const user = text.split(' ').splice(-1).join().slice(0, -1);
                     let usersCollection = await loadData('users');
-                    let nicknamesCollection = await loadData('nicknames');                
+                    let nicknamesCollection = await loadData('nicknames');
+                    usersCollection.findOne({ $and: [ { user_id: from_id }, { chat_id : chatId } ] }, async (err, user) => {
+                        if(user.giveNicknameCount === 3) {
+                            await requestToVkAPI(new VkParameters('messages.send', chatId, `Лимит выдачи кличек. Попробуйте завтра.`));
+                        }
+                    });            
                     await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
                         .then(async res => {
                             let data = JSON.parse(res);
