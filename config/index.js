@@ -13,7 +13,7 @@ export const accessToken = "7478c7761bf43d803b6d4a97746bae5283ee34a97444e3d088f9
 export const openWeatherMapToken = "5cc14094aa1c87dc004054e08a9d4927";
 export const appealPhrases = ["настя", "настенька", "настюша", "насть", "настюха"];
 export const commands = ["инфа", "чат", "кто", "позвать всех", "погода", "рифма", "дать кличку", "клички"];
-export const DB = "mongodb+srv://ROOT:ROOT@cluster0-gzrji.mongodb.net/test?retryWrites=truet";
+export const DB = "mongodb://root:roottoor1@ds231956.mlab.com:31956/isb-bot";  /* mongodb+srv://ROOT:ROOT@cluster0-gzrji.mongodb.net/test?retryWrites=truet*/
 export const nicknames = [  "Аанг",
                             "Аблесси",
                             "Абба",
