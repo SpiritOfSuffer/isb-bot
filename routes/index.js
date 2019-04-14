@@ -102,7 +102,18 @@ router.post('/api/callback/approve', async (req, res) => {
             }
             if(hasCommand(commands[6], text)) {
                 if(lastWordIsNotCommand(commands[6], text)) {
-                    const user = text.split(' ').splice(-1).join().slice(0, -1);
+                    let user = text.split(' ').splice(-2);//.splice(-1).join().slice(0, -1);
+                    if(user[0] != commands[6].split(' ').splice(-1)) {
+                        console.log(`${user[0]} !== ${commands[6].split(' ').splice(-1)}`);
+                        user = user.join(' ').slice(0, -1);
+                    }
+                    else {
+                        user = user.splice(-1).join().slice(0, -1);
+                        if(user.startsWith('[')) {
+                            user = user.slice(user.indexOf('|') + 1, user.indexOf(']'));
+                        }
+                    }
+                    console.log(user);
                     let usersCollection = await loadData('users');
                     let nicknamesCollection = await loadData('nicknames');                
                     await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
@@ -110,7 +121,11 @@ router.post('/api/callback/approve', async (req, res) => {
                             let data = JSON.parse(res);
                             let users = [];
                             data.response.profiles.forEach(item => {
-                                if(item.first_name === user && item.id != from_id) {
+                                if(item.first_name === user && item.id != from_id || item.last_name === user && item.id != from_id || 
+                                   item.first_name === user.split(' ')[0] && item.last_name === user.split(' ')[1] && item.id != from_id ||
+                                   item.first_name === user.split(' ')[0] && item.last_name.startsWith(user.split(' ')[1]) && item.id != from_id ||
+                                   item.id === user.slice(3, user.indexOf('|')) && item.first_name === user.slice(user.indexOf('|') + 1, user.indexOf(']')) && item.id != from_id) {
+
                                     console.log(item.id + ":" + from_id);
                                     users.push(item);
                                 }
@@ -133,9 +148,8 @@ router.post('/api/callback/approve', async (req, res) => {
                                                         }
                                                         else {
                                                             usersCollection.update( 
-                                                                { user_id: from_id }, 
-                                                                { $inc : { giveNicknameCount: 1 }},
-                                                                { chat_id : chatId });
+                                                                { $and: [ { user_id: from_id }, { chat_id : chatId } ] }, 
+                                                                { $inc : { giveNicknameCount: 1 }});
                                                             await insertNickname(nicknamesCollection, `${users[0].first_name} ${users[0].last_name}`, users[0].id, nickname, chatId);
                                                             let config = new BotConfig(users[0].first_name, nickname);
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
@@ -189,9 +203,8 @@ router.post('/api/callback/approve', async (req, res) => {
                                                         }
                                                         else {
                                                             usersCollection.update( 
-                                                                { user_id: from_id }, 
-                                                                { $inc : { giveNicknameCount: 1 }},
-                                                                { chat_id : chatId });
+                                                                { $and: [ { user_id: from_id }, { chat_id : chatId } ] }, 
+                                                                { $inc : { giveNicknameCount: 1 }});
                                                             await insertNickname(nicknamesCollection, `${userForNickname.first_name} ${userForNickname.last_name}`, userForNickname.id, nickname, chatId);
                                                             let config = new BotConfig(userForNickname.first_name, nickname);
                                                             await requestToVkAPI(new VkParameters('messages.send', chatId, config.answers[randomNumber(0, config.answers.length - 1)]));
@@ -245,7 +258,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     .then(async data => {
                         let users =  await data.find( { chat_id : chatId }).sort( { createdAt: -1 }).toArray();
                         //console.log(users);
-                        if(users) {
+                        if(users.length !== 0) {
                             users.forEach((user) => {
                                 message += `${user.name} - "${user.nickname}"\n`;
                             });
