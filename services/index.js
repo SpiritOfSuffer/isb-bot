@@ -26,7 +26,7 @@ export async function insertNickname(nicknames, name, userId, nickname, chatId) 
         chat_id: chatId
     });
 }
-
+//
 export async function insertUser(users, id, chatId) {
     await users.insertOne({
         user_id: id,
