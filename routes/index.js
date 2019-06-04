@@ -77,6 +77,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     .then(async res => {
                         let data = JSON.parse(res);
                         let users = '';
+                        console.log(data);
                         data.response.profiles.forEach(item => {
                             if(item.online === 1) {
                                 users += `@id${item.id}(${item.first_name}), `;
