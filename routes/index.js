@@ -296,6 +296,7 @@ router.post('/api/callback/approve', async (req, res) => {
             }
             
             if(hasCommand(commands[8], text)) {
+                console.log(process.env.HOME);
                 const greeting = text.split(' ').splice(2).join(' ');
                 let obj = {
                     table: []
