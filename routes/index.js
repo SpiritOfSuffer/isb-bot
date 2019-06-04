@@ -307,6 +307,7 @@ router.post('/api/callback/approve', async (req, res) => {
                 await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId))
                 .then(async res => {
                     let data = JSON.parse(res);
+                    console.log(data);
                     data.response.profiles.forEach(user => {
                         if(user.is_admin === 1) {
                             admins.push(user);
