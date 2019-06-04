@@ -22,7 +22,7 @@ router.post('/api/callback/approve', async (req, res) => {
             .then(async res => {
                 let data = JSON.parse(res);
                 console.log(data);
-                let invitedUserName = data.response.first_name;
+                let invitedUserName = data.response[0].first_name;
                 await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет @id${invitedUserId}(${invitedUserName})`));
             });
         }
