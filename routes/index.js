@@ -1,5 +1,5 @@
 import express from 'express';
-import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames, obj } from '../config';
+import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames } from '../config';
 import { requestToVkAPI, requestToOpenWeatherMapAPI } from '../api';
 import { hasKey, hasCommand, randomNumber, lastWordIsNotCommand } from '../helpers';
 import VkParameters from '../models/vk';
@@ -297,6 +297,9 @@ router.post('/api/callback/approve', async (req, res) => {
             
             if(hasCommand(commands[8], text)) {
                 const greeting = text.split(' ').splice(2).join(' ');
+                let obj = {
+                    table: []
+                 };
 
                 fs.readFile('greetings.json', 'utf8', function readFileCallback(err, data){
                     if (err){
