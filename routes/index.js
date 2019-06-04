@@ -301,14 +301,14 @@ router.post('/api/callback/approve', async (req, res) => {
                     table: []
                  };
 
-                fs.readFile('greetings.json', 'utf8', function readFileCallback(err, data){
+                fs.readFile('../greetings.json', 'utf8', function readFileCallback(err, data){
                     if (err){
                         console.log(err);
                     } else {
                     obj = JSON.parse(data); //now it an object
                     obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
                     json = JSON.stringify(obj); //convert it back to json
-                    fs.writeFile('greetings.json', json, 'utf8', callback); // write it back 
+                    fs.writeFile('../greetings.json', json, 'utf8', callback); // write it back 
                 }});
 
                 await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
