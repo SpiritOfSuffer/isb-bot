@@ -1,5 +1,5 @@
 import express from 'express';
-import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames } from '../config';
+import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames, obj } from '../config';
 import { requestToVkAPI, requestToOpenWeatherMapAPI } from '../api';
 import { hasKey, hasCommand, randomNumber, lastWordIsNotCommand } from '../helpers';
 import VkParameters from '../models/vk';
@@ -8,6 +8,7 @@ import cheerio from 'cheerio';
 import request from 'request';
 import mongodb from 'mongodb';
 import { loadData, insertNickname, insertUser } from '../services';
+import fs from 'fs';
 
 const router = express.Router();
 
@@ -16,6 +17,12 @@ router.post('/api/callback/approve', async (req, res) => {
     const data = req.body;
     if(data.type === "message_new" && data.object.action) {
         if(data.object.action.type === "chat_invite_user") {
+            fs.readFile('greetings.json', 'utf8', function (err, data) {
+                if (err) throw err; // we'll not consider error handling for now
+                var obj = JSON.parse(data);
+                console.log(data);
+            });
+
             const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
             const invitedUserId = data.object.action.member_id;
             await requestToVkAPI(new VkParameters('users.get', invitedUserId))
@@ -23,7 +30,7 @@ router.post('/api/callback/approve', async (req, res) => {
                 let data = JSON.parse(res);
                 console.log(data);
                 let invitedUserName = data.response[0].first_name;
-                await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет @id${invitedUserId}(${invitedUserName})`));
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет, @id${invitedUserId}(${invitedUserName})`));
             });
         }
     }
@@ -286,7 +293,24 @@ router.post('/api/callback/approve', async (req, res) => {
                     .catch(e => {
                         console.error(e);
                     });
-            }   
+            }
+            
+            if(hasCommand(commands[8], text)) {
+                const greeting = text.split(' ').splice(2).join(' ');
+
+                fs.readFile('greetings.json', 'utf8', function readFileCallback(err, data){
+                    if (err){
+                        console.log(err);
+                    } else {
+                    obj = JSON.parse(data); //now it an object
+                    obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
+                    json = JSON.stringify(obj); //convert it back to json
+                    fs.writeFile('greetings.json', json, 'utf8', callback); // write it back 
+                }});
+
+                await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
+
+            }
         }
         res.status(200).send('ok')
     }
