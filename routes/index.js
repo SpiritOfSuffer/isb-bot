@@ -30,14 +30,13 @@ router.post('/api/callback/approve', async (req, res) => {
                 
             });
 
-            
             const invitedUserId = data.object.action.member_id;
             await requestToVkAPI(new VkParameters('users.get', invitedUserId))
             .then(async res => {
                 let data = JSON.parse(res);
                 console.log(data);
                 let invitedUserName = data.response[0].first_name;
-                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greets[randomNumber(0, greets.length - 1)]}, @id${invitedUserId}(${invitedUserName})`));
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greets[randomNumber(0, greets.length - 1)].slice(0, -1)}, @id${invitedUserId}(${invitedUserName})`));
             });
         }
     }
