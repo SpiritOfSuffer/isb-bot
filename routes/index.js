@@ -36,7 +36,8 @@ router.post('/api/callback/approve', async (req, res) => {
                 let data = JSON.parse(res);
                 console.log(data);
                 let invitedUserName = data.response[0].first_name;
-                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greets[randomNumber(0, greets.length - 1)].slice(0, -1)}, @id${invitedUserId}(${invitedUserName})`));
+                let greet = greets[randomNumber(0, greets.length - 1)];
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greet.slice(0, -1)}, @id${invitedUserId}(${invitedUserName})`));
             });
         }
     }
