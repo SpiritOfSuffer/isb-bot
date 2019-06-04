@@ -18,10 +18,10 @@ router.post('/api/callback/approve', async (req, res) => {
     if(data.type === "message_new" && data.object.action) {
         if(data.object.action.type === "chat_invite_user") {
             const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
+            let greets = [];
             fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function (err, data) {
                 if (err) throw err; // we'll not consider error handling for now
                 let obj = JSON.parse(data);
-                let greets = [];
                 obj.table.forEach(item => {
                     if(item.chat_id === chatId) {
                         greets.push(item.greeting);
