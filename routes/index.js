@@ -309,7 +309,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     obj = JSON.parse(data); //now it an object
                     obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
                     let json = JSON.stringify(obj); //convert it back to json
-                    fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', callback); // write it back 
+                    fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8'); // write it back 
                 }});
 
                 await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
