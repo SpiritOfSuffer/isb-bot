@@ -311,7 +311,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     console.log(data.response.items);
                     data.response.items.forEach(item => {
                         if(item.is_admin && item.is_admin === true) {
-                            admins.push(item.id);
+                            admins.push(item.member_id);
                         }
                     });
                     console.log(admins);
