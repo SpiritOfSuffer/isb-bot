@@ -310,7 +310,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     let data = JSON.parse(res);
                     console.log(data);
                     data.response.profiles.forEach(item => {
-                        if(item.is_admin === 1) {
+                        if(JSON.parse(item.is_admin) === 1) {
                             admins.push(item.id);
                         }
                     });
