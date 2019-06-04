@@ -316,8 +316,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     });
                     console.log(admins);
                     console.log(from_id);
-                    console.log(admins.indexOf(from_id));
-                    if(admins.indexOf(from_id) != -1) {
+                    if(admins.includes(from_id)) {
                         console.log(process.env.HOME);
                         const greeting = text.split(' ').splice(2).join(' ');
                         let obj = {
