@@ -20,7 +20,7 @@ router.post('/api/callback/approve', async (req, res) => {
             const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
             let greets = [];
             fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function (err, data) {
-                if (err) throw err; // we'll not consider error handling for now
+                if (err) throw err;
                 let obj = JSON.parse(data);
                 obj.table.forEach(item => {
                     if(item.chat_id === chatId) {
@@ -307,10 +307,10 @@ router.post('/api/callback/approve', async (req, res) => {
                 await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId))
                 .then(async res => {
                     let data = JSON.parse(res);
-                    let profiles = JSON.parse(data.response.profiles);
-                    profiles.forEach(user => {
-                        if(user.is_admin === 1) {
-                            admins.push(user);
+                    console.log(data);
+                    data.response.profiles.forEach(item => {
+                        if(item.is_admin === 1) {
+                            admins.push(item.id);
                         }
                     });
                     console.log(admins);
@@ -325,15 +325,15 @@ router.post('/api/callback/approve', async (req, res) => {
                             if (err){
                                 console.log(err);
                             } else {
-                            obj = JSON.parse(data); //now it an object
-                            obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
-                            let json = JSON.stringify(obj); //convert it back to json
+                            obj = JSON.parse(data);
+                            obj.table.push({chat_id: chatId, greeting: greeting});
+                            let json = JSON.stringify(obj);
                             fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', (err) => {
                                 if(err) {
                                     throw err;
                                 }
                                 console.log("complete");
-                            }); // write it back 
+                            });
                         }});
 
                         await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
