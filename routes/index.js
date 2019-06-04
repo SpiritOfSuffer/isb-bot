@@ -276,6 +276,11 @@ router.post('/api/callback/approve', async (req, res) => {
         }
         res.status(200).send('ok')
     }
+    if(data.object.action.type === "chat_invite_user") {
+        const invitedUserId = data.object.action.member_id;
+        const invitedUserName = await requestToVkAPI('users.get', invitedUserId);
+        await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет @id${invitedUserId}(invitedUserName)`));
+    }
 
     console.log(req.body);
 });
