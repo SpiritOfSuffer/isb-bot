@@ -7,7 +7,7 @@ export class BotConfig {
     }
 }
 
-export const obj = {
+export var obj = {
     table: []
  };
 export const groupId = 179812415; //179504857
