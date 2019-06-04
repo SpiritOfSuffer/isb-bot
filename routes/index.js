@@ -16,6 +16,7 @@ router.post('/api/callback/approve', async (req, res) => {
     const data = req.body;
     if(data.type === "message_new" && data.object.action) {
         if(data.object.action.type === "chat_invite_user") {
+            const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
             const invitedUserId = data.object.action.member_id;
             const invitedUserName = await requestToVkAPI('users.get', invitedUserId);
             await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет @id${invitedUserId}(${invitedUserName})`));
