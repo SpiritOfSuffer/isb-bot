@@ -314,9 +314,9 @@ router.post('/api/callback/approve', async (req, res) => {
                             admins.push(item.member_id);
                         }
                     });
-                    console.log(admins);
+                    console.log(admins); 
                     console.log(from_id);
-                    console.log(admins.includes(from_id));
+                    console.log(admins.includes(parseInt(from_id)));
                     if(admins.includes(from_id)) {
                         console.log(process.env.HOME);
                         const greeting = text.split(' ').splice(2).join(' ');
