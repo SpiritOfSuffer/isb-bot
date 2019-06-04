@@ -312,6 +312,7 @@ router.post('/api/callback/approve', async (req, res) => {
                             admins.push(user);
                         }
                     });
+                    console.log(admins);
                     if(admins.indexOf(from_id) != -1) {
                         console.log(process.env.HOME);
                         const greeting = text.split(' ').splice(2).join(' ');
