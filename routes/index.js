@@ -37,7 +37,7 @@ router.post('/api/callback/approve', async (req, res) => {
                 console.log(data);
                 let invitedUserName = data.response[0].first_name;
                 let greet = greets[randomNumber(0, greets.length - 1)];
-                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greet.slice(0, -1)}, @id${invitedUserId}(${invitedUserName})`));
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `@id${invitedUserId}(${invitedUserName}), ${greet.slice(0, -1)}`));
             });
         }
     }
@@ -303,28 +303,45 @@ router.post('/api/callback/approve', async (req, res) => {
             }
             
             if(hasCommand(commands[8], text)) {
-                console.log(process.env.HOME);
-                const greeting = text.split(' ').splice(2).join(' ');
-                let obj = {
-                    table: []
-                 };
-
-                fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function readFileCallback(err, data){
-                    if (err){
-                        console.log(err);
-                    } else {
-                    obj = JSON.parse(data); //now it an object
-                    obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
-                    let json = JSON.stringify(obj); //convert it back to json
-                    fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', (err) => {
-                        if(err) {
-                            throw err;
+                let admins = [];
+                await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId))
+                .then(async res => {
+                    let data = JSON.parse(res);
+                    data.response.profiles.forEach(user => {
+                        if(user.is_admin === 1) {
+                            admins.push(user);
                         }
-                        console.log("complete");
-                    }); // write it back 
-                }});
+                    });
+                    if(admins.indexOf(from_id) != -1) {
+                        console.log(process.env.HOME);
+                        const greeting = text.split(' ').splice(2).join(' ');
+                        let obj = {
+                            table: []
+                        };
 
-                await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
+                        fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function readFileCallback(err, data){
+                            if (err){
+                                console.log(err);
+                            } else {
+                            obj = JSON.parse(data); //now it an object
+                            obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
+                            let json = JSON.stringify(obj); //convert it back to json
+                            fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', (err) => {
+                                if(err) {
+                                    throw err;
+                                }
+                                console.log("complete");
+                            }); // write it back 
+                        }});
+
+                        await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
+                    }
+                    else {
+                        await requestToVkAPI(new VkParameters('messages.send', chatId, `Функцию могут использовать только администраторы беседы`))
+                    }
+                    
+                })
+                .catch(err => console.log(err));
 
             }
         }
