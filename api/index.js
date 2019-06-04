@@ -2,6 +2,7 @@ import request from 'request-promise';
 
 export async function requestToVkAPI(parameters) {
     const url = `https://api.vk.com/method/${parameters.method}?${parameters.params}&access_token=${parameters.token}&v=${parameters.version}`;
+    console.log(url);
     try {
         return await request.post(encodeURI(url));
     }
