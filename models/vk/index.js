@@ -9,7 +9,7 @@ export default class VkParameters {
             this.params = `chat_id=${id}&message=${message}&random_id=${Math.ceil(Math.random() * 100000000)}`;
         }
         if(method === 'messages.getConversationMembers') {
-            this.params = `peer_id=${id}&fields=is_admin`;
+            this.params = `peer_id=${id}&fields=${message}`;
         }
         if(method === 'users.get') {
             this.params = `user_ids=${id}`;

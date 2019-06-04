@@ -73,7 +73,7 @@ router.post('/api/callback/approve', async (req, res) => {
             }
 
             if(hasCommand(commands[3], text)) {
-                await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
+                await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId, 'online' ))
                     .then(async res => {
                         let data = JSON.parse(res);
                         let users = '';
@@ -308,9 +308,9 @@ router.post('/api/callback/approve', async (req, res) => {
                 await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId))
                 .then(async res => {
                     let data = JSON.parse(res);
-                    console.log(data.response.profiles);
-                    data.response.profiles.forEach(item => {
-                        if(item.is_admin === 1) {
+                    console.log(data.response.items);
+                    data.response.items.forEach(item => {
+                        if(item.is_admin && item.is_admin === 1) {
                             admins.push(item.id);
                         }
                     });
