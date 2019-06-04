@@ -308,7 +308,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     } else {
                     obj = JSON.parse(data); //now it an object
                     obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
-                    json = JSON.stringify(obj); //convert it back to json
+                    let json = JSON.stringify(obj); //convert it back to json
                     fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', callback); // write it back 
                 }});
 
