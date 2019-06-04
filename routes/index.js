@@ -17,20 +17,27 @@ router.post('/api/callback/approve', async (req, res) => {
     const data = req.body;
     if(data.type === "message_new" && data.object.action) {
         if(data.object.action.type === "chat_invite_user") {
+            const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
             fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function (err, data) {
                 if (err) throw err; // we'll not consider error handling for now
-                var obj = JSON.parse(data);
-                console.log(data);
+                let obj = JSON.parse(data);
+                let greets = [];
+                obj.table.forEach(item => {
+                    if(item.chat_id === chatId) {
+                        greets.push(item.greeting);
+                    }
+                });
+                
             });
 
-            const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
+            
             const invitedUserId = data.object.action.member_id;
             await requestToVkAPI(new VkParameters('users.get', invitedUserId))
             .then(async res => {
                 let data = JSON.parse(res);
                 console.log(data);
                 let invitedUserName = data.response[0].first_name;
-                await requestToVkAPI(new VkParameters('messages.send', chatId, `Привет-привет, @id${invitedUserId}(${invitedUserName})`));
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `${greets[randomNumber(0, greets.length - 1)]}, @id${invitedUserId}(${invitedUserName})`));
             });
         }
     }
