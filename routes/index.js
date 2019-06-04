@@ -17,7 +17,7 @@ router.post('/api/callback/approve', async (req, res) => {
     const data = req.body;
     if(data.type === "message_new" && data.object.action) {
         if(data.object.action.type === "chat_invite_user") {
-            fs.readFile('greetings.json', 'utf8', function (err, data) {
+            fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function (err, data) {
                 if (err) throw err; // we'll not consider error handling for now
                 var obj = JSON.parse(data);
                 console.log(data);
@@ -302,14 +302,14 @@ router.post('/api/callback/approve', async (req, res) => {
                     table: []
                  };
 
-                fs.readFile('greetings.json', 'utf8', function readFileCallback(err, data){
+                fs.readFile(process.env.HOME + '/greetings.json', 'utf8', function readFileCallback(err, data){
                     if (err){
                         console.log(err);
                     } else {
                     obj = JSON.parse(data); //now it an object
                     obj.table.push({chat_id: chatId, greeting: greeting}); //add some data
                     json = JSON.stringify(obj); //convert it back to json
-                    fs.writeFile('greetings.json', json, 'utf8', callback); // write it back 
+                    fs.writeFile(process.env.HOME + '/greetings.json', json, 'utf8', callback); // write it back 
                 }});
 
                 await requestToVkAPI(new VkParameters('messages.send', chatId, 'Приветствие добавлено'));
