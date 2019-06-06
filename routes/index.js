@@ -375,13 +375,14 @@ router.post('/api/callback/approve', async (req, res) => {
                                     item.first_name === user.split(' ')[0] && item.last_name === user.split(' ')[1] ||
                                     item.first_name === user.split(' ')[0] && item.last_name.startsWith(user.split(' ')[1])) {
                                         
-                                     users.push(item);
+                                     users.push(item.first_name);
                                 }
                             });
-                            let rnd = randomNumber(0, users.length - 1);
-                            let randomUserId = users[rnd].id;
-                            let randomUserName = users[rnd].first_name
-                            await requestToVkAPI(new VkParameters('messages.send', chatId, `Ударила тебя @id${randomUserId}(${randomUserName})`));
+                            console.log(users);
+                            //let rnd = randomNumber(0, users.length - 1);
+                            //let randomUserId = users[rnd].id;
+                            //let randomUserName = users[rnd].first_name
+                            //await requestToVkAPI(new VkParameters('messages.send', chatId, `Ударила тебя @id${randomUserId}(${randomUserName})`));
                         });
                     }
                     else {
