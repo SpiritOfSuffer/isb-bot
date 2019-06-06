@@ -363,14 +363,22 @@ router.post('/api/callback/approve', async (req, res) => {
 
             if(hasCommand[9], text) {
                 let user = text.split(' ').splice(-2);
-                    if(user[0] != commands[6].split(' ').splice(-1)) {
-                        console.log(`${user[0]} !== ${commands[6].split(' ').splice(-1)}`);
+                    if(user[0] != commands[9].split(' ').splice(-1)) {
+                        console.log(`${user[0]} !== ${commands[9].split(' ').splice(-1)}`);
                         user = user.join(' ').slice(0, -1);
                     }
                     else {
                         user = user.splice(-1).join().slice(0, -1);
                         if(user.startsWith('[')) {
-                            user = user.slice(user.indexOf('|') + 1, user.indexOf(']'));
+                            //user = user.slice(user.indexOf('|') + 1, user.indexOf(']'));
+                            const userId = user.slice(t.indexOf('[') + 3, t.indexOf('|'));
+                            console.log(userId);
+                            await requestToVkAPI(new VkParameters('users.get', userId))
+                            .then(async res => {
+                                let data = JSON.parse(res);
+                                let userName = data.response[0].first_name;
+                                await requestToVkAPI(new VkParameters('messages.send', chatId, `Ударила тебя @id${userId}(${userName})`));
+                            });
                         }
                     }
                 console.log(user);    
