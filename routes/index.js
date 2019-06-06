@@ -364,7 +364,7 @@ router.post('/api/callback/approve', async (req, res) => {
             if(hasCommand(commands[9], text)) {
                 let user = text.split(' ').splice(-2);
                 console.log(user);
-                    if(user[0] != commands[9].split(' ').splice(-1)) {
+                    if(!user[1].includes("|")) {
                         console.log(`${user[0]} !== ${commands[9].split(' ').splice(-1)}`);
                         user = user.join(' ').slice(0, -1);
                         await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
