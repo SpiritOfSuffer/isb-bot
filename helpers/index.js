@@ -10,7 +10,6 @@ export function hasCommand(command, text) {
     if(text.slice(-1) === '"') {
         text = text.slice(1, -1);
     }
-    console.log(text);
     return text.toLowerCase().includes(command);
 }
 

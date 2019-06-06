@@ -362,8 +362,8 @@ router.post('/api/callback/approve', async (req, res) => {
             }
 
             if(hasCommand(commands[9], text)) {
-                console.log(text);
                 let user = text.split(' ').splice(-2);
+                console.log(user);
                     if(user[0] != commands[9].split(' ').splice(-1)) {
                         console.log(`${user[0]} !== ${commands[9].split(' ').splice(-1)}`);
                         user = user.join(' ').slice(0, -1);
