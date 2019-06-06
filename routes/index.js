@@ -1,5 +1,5 @@
 import express from 'express';
-import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames } from '../config';
+import { groupId, responseString, accessToken, appealPhrases, commands, BotConfig, nicknames, farewellPhrases } from '../config';
 import { requestToVkAPI, requestToOpenWeatherMapAPI } from '../api';
 import { hasKey, hasCommand, randomNumber, lastWordIsNotCommand } from '../helpers';
 import VkParameters from '../models/vk';
@@ -38,6 +38,16 @@ router.post('/api/callback/approve', async (req, res) => {
                 let invitedUserName = data.response[0].first_name;
                 let greet = greets[randomNumber(0, greets.length - 1)];
                 await requestToVkAPI(new VkParameters('messages.send', chatId, `@id${invitedUserId}(${invitedUserName}), ${greet.slice(0, -1)}`));
+            });
+        }
+
+        if(data.object.action.type === "chat_kick_user") {
+            const kickedUserId = data.object.action.member_id;
+            await requestToVkAPI(new VkParameters('users.get', kickedUserId))
+            .then(async res => {
+                let data = JSON.parse(res);
+                let kickedUserName = data.response[0].first_name;
+                await requestToVkAPI(new VkParameters('messages.send', chatId, `@id${kickedUserId}(${kickedUserName}), ${farewellPhrases[randomNumber(0, farewellPhrases.length - 1)]}`));
             });
         }
     }
@@ -347,6 +357,22 @@ router.post('/api/callback/approve', async (req, res) => {
                     
                 })
                 .catch(err => console.log(err));
+
+            }
+
+            if(hasCommand[9], text) {
+                let user = text.split(' ').splice(-2);
+                    if(user[0] != commands[6].split(' ').splice(-1)) {
+                        console.log(`${user[0]} !== ${commands[6].split(' ').splice(-1)}`);
+                        user = user.join(' ').slice(0, -1);
+                    }
+                    else {
+                        user = user.splice(-1).join().slice(0, -1);
+                        if(user.startsWith('[')) {
+                            user = user.slice(user.indexOf('|') + 1, user.indexOf(']'));
+                        }
+                    }
+                console.log(user);    
 
             }
         }
