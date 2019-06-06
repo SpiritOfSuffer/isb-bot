@@ -366,6 +366,23 @@ router.post('/api/callback/approve', async (req, res) => {
                     if(user[0] != commands[9].split(' ').splice(-1)) {
                         console.log(`${user[0]} !== ${commands[9].split(' ').splice(-1)}`);
                         user = user.join(' ').slice(0, -1);
+                        await requestToVkAPI(new VkParameters('messages.getConversationMembers', 2000000000 + chatId ))
+                        .then(async res => {
+                            let data = JSON.parse(res);
+                            let users = [];
+                            data.response.profiles.forEach(item => {
+                                if(item.first_name === user || item.last_name === user || 
+                                    item.first_name === user.split(' ')[0] && item.last_name === user.split(' ')[1] ||
+                                    item.first_name === user.split(' ')[0] && item.last_name.startsWith(user.split(' ')[1])) {
+                                        
+                                     users.push(item);
+                                }
+                            });
+                            let rnd = randomNumber(0, users.length - 1);
+                            let randomUserId = users[rnd].id;
+                            let randomUserName = users[rnd].first_name
+                            await requestToVkAPI(new VkParameters('messages.send', chatId, `Ударила тебя @id${randomUserId}(${randomUserName})`));
+                        });
                     }
                     else {
                         user = user.splice(-1).join().slice(0, -1);
