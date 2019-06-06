@@ -42,6 +42,7 @@ router.post('/api/callback/approve', async (req, res) => {
         }
 
         if(data.object.action.type === "chat_kick_user") {
+            const chatId = JSON.stringify(data.object.peer_id) - 2000000000;
             const kickedUserId = data.object.action.member_id;
             await requestToVkAPI(new VkParameters('users.get', kickedUserId))
             .then(async res => {
