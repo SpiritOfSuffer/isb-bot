@@ -370,11 +370,13 @@ router.post('/api/callback/approve', async (req, res) => {
                         .then(async res => {
                             let data = JSON.parse(res);
                             let users = [];
+                            console.log("SEARCH");
                             data.response.profiles.forEach(item => {
                                 if(item.first_name === user || item.last_name === user || 
                                     item.first_name === user.split(' ')[0] && item.last_name === user.split(' ')[1] ||
                                     item.first_name === user.split(' ')[0] && item.last_name.startsWith(user.split(' ')[1])) {
                                         
+                                     console.log(item.first_name);
                                      users.push(item.first_name);
                                 }
                             });
