@@ -371,7 +371,7 @@ router.post('/api/callback/approve', async (req, res) => {
                         user = user.splice(-1).join().slice(0, -1);
                         if(user.startsWith('[')) {
                             //user = user.slice(user.indexOf('|') + 1, user.indexOf(']'));
-                            const userId = user.slice(t.indexOf('[') + 3, t.indexOf('|'));
+                            const userId = user.slice(user.indexOf('[') + 3, user.indexOf('|'));
                             console.log(userId);
                             await requestToVkAPI(new VkParameters('users.get', userId))
                             .then(async res => {
