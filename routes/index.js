@@ -409,6 +409,20 @@ router.post('/api/callback/approve', async (req, res) => {
                 console.log(user);    
 
             }
+
+            if(hasCommand(commands[10], text)) {
+                //const first = text.slice(text.indexOf(commands[10]) + commands[10].length + 1, text.indexOf("или"));
+                //const second = text.slice(text.indexOf("или") + 4);
+                await requestToVkAPI(new VkParameters('users.get', from_id))
+                .then(async res => {
+                    let msg = '';
+                    let data = JSON.parse(res);
+                    let userName = data.response[0].first_name;
+                    Math.random() > .5 ? msg = text.slice(text.indexOf(commands[10]) + commands[10].length + 1, text.indexOf("или")) :
+                                         msg = text.slice(text.indexOf("или") + 4);
+                    await requestToVkAPI(new VkParameters('messages.send', chatId, `@id${from_id}(${userName}), я выбираю — ${msg}`));
+                });
+            }
         }
         res.status(200).send('ok')
     }
