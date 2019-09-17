@@ -419,7 +419,7 @@ router.post('/api/callback/approve', async (req, res) => {
                     let data = JSON.parse(res);
                     let userName = data.response[0].first_name;
                     Math.random() > .5 ? msg = text.slice(text.indexOf(commands[10]) + commands[10].length + 1, text.indexOf("или")) :
-                                         msg = text.slice(text.indexOf("или") + 5);
+                                         msg = text.slice(text.indexOf("или")).slice(0, -1);
                     console.log(msg);
                     await requestToVkAPI(new VkParameters('messages.send', chatId, `@id${from_id}(${userName}), я выбираю — ${msg}`));
                 });
